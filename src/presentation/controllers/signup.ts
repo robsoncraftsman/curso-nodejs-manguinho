@@ -15,5 +15,9 @@ export class SignUpController {
         return badRequest(new MissingParamError(requiredField));
       }
     }
+    return {
+      statusCode: 200,
+      body: 'OK'
+    };
   }
 }
