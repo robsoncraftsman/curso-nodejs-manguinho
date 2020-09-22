@@ -7,7 +7,7 @@ import { AddAccount } from '../../domain/usecases/add-account';
 export class SignUpController implements Controller {
   constructor(private readonly emailValidator: EmailValidator, private readonly addAccount: AddAccount) {}
 
-  handle(httpRequest: HttpRequest): HttpResponse {
+  async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const requiredFields = ['name', 'email', 'password', 'passwordConfirmation'];
       for (const requiredField of requiredFields) {
@@ -26,7 +26,7 @@ export class SignUpController implements Controller {
         return badRequest(new InvalidParamError('email'));
       }
 
-      const addAccount = this.addAccount.add({ name, email, password });
+      const addAccount = await this.addAccount.add({ name, email, password });
 
       return ok(addAccount);
     } catch (error) {
