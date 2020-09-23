@@ -21,4 +21,13 @@ describe('BCrypt Adapater', () => {
     const hashedValue = await sut.encrypt('any_value');
     expect(hashedValue).toEqual('hashed_value');
   });
+
+  test('Should throw if bcrypt throws', async () => {
+    const sut = makeSut();
+    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const encryptPromisse = sut.encrypt('any_value');
+    await expect(encryptPromisse).rejects.toThrow();
+  });
 });
