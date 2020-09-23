@@ -8,10 +8,17 @@ const makeSut = (): BCryptAdapter => {
 };
 
 describe('BCrypt Adapater', () => {
-  test('Should call bcrypt with correct value', async () => {
+  test('Should call bcrypt with correct values', async () => {
     const sut = makeSut();
     const hashSpy = jest.spyOn(bcrypt, 'hash');
     await sut.encrypt('any_value');
     expect(hashSpy).toHaveBeenCalledWith('any_value', SALT);
+  });
+
+  test('Should return a hash from value', async () => {
+    const sut = makeSut();
+    jest.spyOn(bcrypt, 'hash').mockReturnValueOnce(new Promise((resolve) => resolve('hashed_value')));
+    const hashedValue = await sut.encrypt('any_value');
+    expect(hashedValue).toEqual('hashed_value');
   });
 });
