@@ -76,3 +76,6 @@ typings/
 
 # Dist folder
 dist
+
+# Jest MongoDb Config
+globalConfig.json
