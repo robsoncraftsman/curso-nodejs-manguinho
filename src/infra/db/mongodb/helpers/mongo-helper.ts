@@ -1,9 +1,10 @@
 import { Collection, MongoClient } from 'mongodb';
+import { getEnv } from '../../../../util/env-helper';
 
 export const MongoHelper = {
   connection: (null as unknown) as MongoClient,
   async connect() {
-    const uri: string = process.env.MONGO_URL ?? '';
+    const uri = getEnv('MONGO_URL');
     this.connection = await MongoClient.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true
