@@ -2,7 +2,8 @@ import { Collection, MongoClient } from 'mongodb';
 import { getEnv } from '../../../../util/env-helper';
 
 export const MongoHelper = {
-  connection: (null as unknown) as MongoClient,
+  connection: null as MongoClient | null,
+
   async connect() {
     const uri = getEnv('MONGO_URL');
     this.connection = await MongoClient.connect(uri, {
@@ -12,11 +13,19 @@ export const MongoHelper = {
   },
 
   async disconnect() {
-    await this.connection.close();
+    await this.connection?.close();
+    this.connection = null;
   },
 
-  getCollection(name: string): Collection {
-    return this.connection.db().collection(name);
+  async getCollection(name: string): Promise<Collection> {
+    if (!this.connection?.isConnected()) {
+      await this.connect();
+    }
+    if (this.connection) {
+      return this.connection.db().collection(name);
+    } else {
+      throw new Error('Invalid MongoClient connection');
+    }
   },
 
   map(data: any): any {
