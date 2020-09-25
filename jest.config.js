@@ -4,6 +4,8 @@ module.exports = {
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/main/server.ts',
     '!<rootDir>/src/main/config/**',
+    '!<rootDir>/src/main/adapters/**',
+    '!<rootDir>/src/main/factories/**',
     '!<rootDir>/src/**/*-protocols.ts',
     '!**/protocols/**',
     '!**/test/**'
