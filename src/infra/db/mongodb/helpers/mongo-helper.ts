@@ -1,31 +1,31 @@
 import { Collection, MongoClient } from 'mongodb';
-import { getEnv } from '../../../../util/env-helper';
 
 export const MongoHelper = {
-  connection: null as MongoClient | null,
+  client: null as MongoClient | null,
+  url: '',
 
-  async connect() {
-    const uri = getEnv('MONGO_URL');
-    this.connection = await MongoClient.connect(uri, {
+  async _createMongoClientConnection(url: string): Promise<MongoClient> {
+    return await MongoClient.connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
   },
 
+  async connect(url: string) {
+    this.url = url;
+    this.client = await this._createMongoClientConnection(this.url);
+  },
+
   async disconnect() {
-    await this.connection?.close();
-    this.connection = null;
+    await this.client?.close();
+    this.client = null;
   },
 
   async getCollection(name: string): Promise<Collection> {
-    if (!this.connection?.isConnected()) {
-      await this.connect();
+    if (!this.client) {
+      this.client = await this._createMongoClientConnection(this.url);
     }
-    if (this.connection) {
-      return this.connection.db().collection(name);
-    } else {
-      throw new Error('Invalid MongoClient connection');
-    }
+    return this.client.db().collection(name);
   },
 
   map(data: any): any {

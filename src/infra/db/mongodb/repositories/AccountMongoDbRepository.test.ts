@@ -1,6 +1,7 @@
 import { AddAccountModel } from '../../../../domain/usecases/add-account';
 import { AccountMongoDbRepository } from './AccountMongoDbRepository';
 import { MongoHelper } from '../helpers/mongo-helper';
+import { getEnv } from '../../../../util/env-helper';
 
 const makeSut = (): AccountMongoDbRepository => {
   return new AccountMongoDbRepository();
@@ -8,7 +9,7 @@ const makeSut = (): AccountMongoDbRepository => {
 
 describe('MongoDb AccountRepository', () => {
   beforeAll(async () => {
-    await MongoHelper.connect();
+    await MongoHelper.connect(getEnv('MONGO_URL'));
   });
 
   afterAll(async () => {
