@@ -51,7 +51,9 @@ describe('LogController Decorator', () => {
 
   test('Should call controller handle on ServerError', async () => {
     const { sut, controllerStub } = makeSut();
-    jest.spyOn(controllerStub, 'handle').mockReturnValueOnce(new Promise((resolve) => resolve(serverError())));
+    jest
+      .spyOn(controllerStub, 'handle')
+      .mockReturnValueOnce(new Promise((resolve) => resolve(serverError(new Error()))));
     const httpRequest = { body: 'OK' };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);

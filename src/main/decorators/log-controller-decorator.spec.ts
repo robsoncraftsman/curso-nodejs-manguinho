@@ -6,7 +6,7 @@ import { serverError } from '../../presentation/helpers/http-helper';
 const makeControllerStub = (): Controller => {
   class ControllerStub implements Controller {
     async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
-      return new Promise((resolve) => resolve(serverError()));
+      return new Promise((resolve) => resolve(serverError(new Error())));
     }
   }
   return new ControllerStub();
@@ -23,6 +23,6 @@ describe('LogController Decorator', () => {
     const httpRequest = { body: 'OK' };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body).toEqual(new ServerError(new Error()));
   });
 });
