@@ -21,6 +21,10 @@ export const MongoHelper = {
     this.client = null;
   },
 
+  isConnected() {
+    return this.client?.isConnected();
+  },
+
   async getCollection(name: string): Promise<Collection> {
     if (!this.client) {
       this.client = await this._createMongoClientConnection(this.url);

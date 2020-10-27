@@ -10,10 +10,15 @@ describe('Mongo Helper', () => {
     await sut.disconnect();
   });
 
+  test('Should be connected to MongoDB', () => {
+    expect(sut.isConnected()).toBeTruthy();
+  });
+
   test('Should reconnect if mongodb is down', async () => {
     let accountCollection = await sut.getCollection('accounts');
     expect(accountCollection).toBeTruthy();
     await sut.disconnect();
+    expect(sut.isConnected()).toBeFalsy();
     accountCollection = await sut.getCollection('accounts');
     expect(accountCollection).toBeTruthy();
   });
