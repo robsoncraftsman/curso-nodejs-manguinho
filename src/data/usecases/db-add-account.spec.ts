@@ -22,12 +22,7 @@ const makeEncrypterStub = (): Encrypter => {
 const makeAddAccountRepositoryStub = (): AddAccountRepository => {
   class AddAccountRepositoryStub implements AddAccountRepository {
     async add(addAccountModel: AddAccountModel): Promise<AccountModel> {
-      const fakeAccountModel = {
-        id: 'valid_id',
-        name: 'valid_name',
-        email: 'valid_email@email.com',
-        password: 'hashed_password'
-      };
+      const fakeAccountModel = makeValidAccountModel();
       return new Promise((resolve) => resolve(fakeAccountModel));
     }
   }
@@ -45,16 +40,25 @@ const makeSut = (): SutTypes => {
   };
 };
 
+const makeValidAddAccountModel = (): AddAccountModel => ({
+  name: 'valid_name',
+  email: 'valid_email@email.com',
+  password: 'valid_password'
+});
+
+const makeValidAddAccountModelWithHashedPassword = (): AddAccountModel => {
+  return { ...makeValidAddAccountModel(), ...{ password: 'hashed_password' } };
+};
+
+const makeValidAccountModel = (): AccountModel => {
+  return { ...makeValidAddAccountModelWithHashedPassword(), ...{ id: 'valid_id' } };
+};
+
 describe('DbAddAccount Usecase', () => {
   test('Should call Encrypter with a correct password', async () => {
     const { sut, encrypterStub } = makeSut();
     const encryptSpy = jest.spyOn(encrypterStub, 'encrypt');
-    const addAccountModel = {
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'valid_password',
-      passwordConfirmation: 'valid_password'
-    };
+    const addAccountModel = makeValidAddAccountModel();
     await sut.add(addAccountModel);
     expect(encryptSpy).toHaveBeenCalledWith('valid_password');
   });
@@ -64,12 +68,7 @@ describe('DbAddAccount Usecase', () => {
     jest.spyOn(encrypterStub, 'encrypt').mockImplementationOnce(() => {
       throw new Error();
     });
-    const addAccountModel = {
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'valid_password',
-      passwordConfirmation: 'valid_password'
-    };
+    const addAccountModel = makeValidAddAccountModel();
     const addPromisse = sut.add(addAccountModel);
     await expect(addPromisse).rejects.toThrow();
   });
@@ -77,33 +76,16 @@ describe('DbAddAccount Usecase', () => {
   test('Should call AddAccountRepository with correct values', async () => {
     const { sut, addAccountRepositoryStub } = makeSut();
     const addSpy = jest.spyOn(addAccountRepositoryStub, 'add');
-    const addAccountModel = {
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'valid_password'
-    };
+    const addAccountModel = makeValidAddAccountModel();
     await sut.add(addAccountModel);
-    expect(addSpy).toHaveBeenCalledWith({
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'hashed_password'
-    });
+    expect(addSpy).toHaveBeenCalledWith(makeValidAddAccountModelWithHashedPassword());
   });
 
   test('Should return correct AccountModel', async () => {
     const { sut } = makeSut();
-    const addAccountModel = {
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'valid_password'
-    };
+    const addAccountModel = makeValidAddAccountModel();
     const accountModel = await sut.add(addAccountModel);
-    expect(accountModel).toEqual({
-      id: 'valid_id',
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'hashed_password'
-    });
+    expect(accountModel).toEqual(makeValidAccountModel());
   });
 
   test('Should throw if AddAccountRepository throws an expcetion', async () => {
@@ -111,12 +93,7 @@ describe('DbAddAccount Usecase', () => {
     jest.spyOn(addAccountRepositoryStub, 'add').mockImplementationOnce(() => {
       throw new Error();
     });
-    const addAccountModel = {
-      name: 'valid_name',
-      email: 'valid_email@email.com',
-      password: 'valid_password',
-      passwordConfirmation: 'valid_password'
-    };
+    const addAccountModel = makeValidAddAccountModel();
     const addPromisse = sut.add(addAccountModel);
     await expect(addPromisse).rejects.toThrow();
   });
