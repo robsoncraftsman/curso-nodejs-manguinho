@@ -22,7 +22,7 @@ const makeSut = (): SutTypes => {
   const sut = new ResponseErrorControllerDecorator(controllerStub);
   return {
     sut,
-    controllerStub: controllerStub
+    controllerStub
   };
 };
 
