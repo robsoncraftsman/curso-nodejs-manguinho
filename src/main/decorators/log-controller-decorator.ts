@@ -3,10 +3,14 @@ import { Controller, HttpRequest, HttpResponse } from '../../presentation/protoc
 export class LogControllerDecorator implements Controller {
   constructor(private readonly controller: Controller) {}
 
+  logError(value: any): void {
+    console.error(value);
+  }
+
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     const httpResponse = await this.controller.handle(httpRequest);
     if (httpResponse.statusCode === 500) {
-      console.error(httpResponse.body);
+      this.logError(httpResponse.body);
     }
     return httpResponse;
   }
