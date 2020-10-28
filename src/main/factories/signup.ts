@@ -5,8 +5,9 @@ import { BCryptAdapter } from '../../infra/cryprography/bcrypt-adpater';
 import { AccountMongoDbRepository } from '../../infra/db/mongodb/repositories/AccountMongoDbRepository';
 import env from '../config/env';
 import { ResponseErrorControllerDecorator } from '../decorators/response-error-controller-decorator';
-import { LogControllerDecorator } from '../decorators/log-controller-decorator';
+import { LogErrorControllerDecorator } from '../decorators/log-error-controller-decorator';
 import { Controller } from '../../presentation/protocols';
+import { LogMongoDbRepository } from '../../infra/db/mongodb/repositories/log-error-mongodb-repository';
 
 export const makeSignUpController = (): Controller => {
   const emailValidatorAdapter = new EmailValidatorAdapter();
@@ -14,7 +15,8 @@ export const makeSignUpController = (): Controller => {
   const accountMongoDbRepository = new AccountMongoDbRepository();
   const dbAddAccount = new DbAddAccount(bcrypAdapter, accountMongoDbRepository);
   const signupController = new SignUpController(emailValidatorAdapter, dbAddAccount);
-  const logControllerDecorator = new LogControllerDecorator(signupController);
+  const logErrorRepository = new LogMongoDbRepository();
+  const logControllerDecorator = new LogErrorControllerDecorator(signupController, logErrorRepository);
   const responseErrorControllerDecorator = new ResponseErrorControllerDecorator(logControllerDecorator);
   return responseErrorControllerDecorator;
 };
