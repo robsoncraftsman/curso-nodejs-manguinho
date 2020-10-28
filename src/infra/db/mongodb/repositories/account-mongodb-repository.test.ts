@@ -1,5 +1,5 @@
 import { AddAccountModel } from '../../../../domain/usecases/add-account';
-import { AccountMongoDbRepository } from './AccountMongoDbRepository';
+import { AccountMongoDbRepository } from './account-mongodb-repository';
 import { MongoHelper } from '../helpers/mongo-helper';
 import { getEnv } from '../../../../util/env-helper';
 
